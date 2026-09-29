@@ -40,7 +40,6 @@
     <Folder Include="Geometry\" />
     <Folder Include="Math\" />
     <Folder Include="Layout\" />
-    <Folder Include="Utilities\" />
   </ItemGroup>
   
   <Target Name="CopyPdbForMonoDebugging" AfterTargets="AfterBuild">
