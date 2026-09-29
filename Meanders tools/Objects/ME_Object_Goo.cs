@@ -4,13 +4,13 @@ using Rhino;
 using Rhino.Display;
 using Rhino.DocObjects;
 using Rhino.Geometry;
-using System.Drawing;
 using System;
+using System.Drawing;
 
 namespace Meanders_tools
 {
     public class ME_Object_Goo :
-        GH_Goo<ME_Object>,
+        GH_GeometricGoo<ME_Object>,
         IGH_PreviewData,
         IGH_BakeAwareData
     {
@@ -23,10 +23,6 @@ namespace Meanders_tools
         {
             Value = obj;
         }
-
-        // ------------------------------------------------------------
-        // Basic Goo
-        // ------------------------------------------------------------
 
         public override bool IsValid
         {
@@ -50,6 +46,41 @@ namespace Meanders_tools
             }
         }
 
+        public override string ToString()
+        {
+            return Value != null
+                ? Value.ToString()
+                : "Null ME Object";
+        }
+
+        public override BoundingBox Boundingbox
+        {
+            get
+            {
+                if (Value == null ||
+                    Value.Geometry == null)
+                {
+                    return BoundingBox.Empty;
+                }
+
+                if (Value.Geometry is GH_GeometryGroup ghGroup)
+                {
+                    return ghGroup.Boundingbox;
+                }
+
+                return GetBoundingBox(
+                    Value.Geometry);
+            }
+        }
+
+        public BoundingBox ClippingBox
+        {
+            get
+            {
+                return Boundingbox;
+            }
+        }
+
         public override IGH_Goo Duplicate()
         {
             if (Value == null)
@@ -63,11 +94,171 @@ namespace Meanders_tools
             );
         }
 
-        public override string ToString()
+        public override IGH_GeometricGoo DuplicateGeometry()
         {
-            return Value != null
-                ? Value.ToString()
-                : "Null ME Object";
+            if (Value == null)
+                return new ME_Object_Goo();
+
+            return new ME_Object_Goo(
+                new ME_Object(
+                    Value.Geometry,
+                    Value.Attributes
+                )
+            );
+        }
+
+        public override BoundingBox GetBoundingBox(
+            Transform xform)
+        {
+            if (Value == null ||
+                Value.Geometry == null)
+            {
+                return BoundingBox.Empty;
+            }
+
+            if (Value.Geometry is GH_GeometryGroup ghGroup)
+            {
+                return ghGroup.GetBoundingBox(xform);
+            }
+
+            BoundingBox box =
+                GetBoundingBox(Value.Geometry);
+
+            if (box.IsValid)
+                box.Transform(xform);
+
+            return box;
+        }
+
+        public override IGH_GeometricGoo Transform(
+            Transform xform)
+        {
+            if (Value == null ||
+                Value.Geometry == null)
+            {
+                return new ME_Object_Goo();
+            }
+
+            if (Value.Geometry is GH_GeometryGroup ghGroup)
+            {
+                IGH_GeometricGoo transformed =
+                    ghGroup.Transform(xform);
+
+                if (transformed == null)
+                    return null;
+
+                return new ME_Object_Goo(
+                    new ME_Object(
+                        transformed,
+                        Value.Attributes
+                    )
+                );
+            }
+
+            object geometry =
+                Value.Geometry;
+
+            if (geometry is GeometryBase rhinoGeometry)
+            {
+                GeometryBase duplicate =
+                    rhinoGeometry.Duplicate();
+
+                duplicate.Transform(xform);
+
+                return new ME_Object_Goo(
+                    new ME_Object(
+                        duplicate,
+                        Value.Attributes
+                    )
+                );
+            }
+
+            if (geometry is Point3d point)
+            {
+                Point3d transformedPoint = point;
+                transformedPoint.Transform(xform);
+
+                return new ME_Object_Goo(
+                    new ME_Object(
+                        transformedPoint,
+                        Value.Attributes
+                    )
+                );
+            }
+
+            if (geometry is Rectangle3d rectangle)
+            {
+                Rectangle3d transformedRectangle =
+                    rectangle;
+
+                transformedRectangle.Transform(xform);
+
+                return new ME_Object_Goo(
+                    new ME_Object(
+                        transformedRectangle,
+                        Value.Attributes
+                    )
+                );
+            }
+
+            return new ME_Object_Goo(
+                new ME_Object(
+                    geometry,
+                    Value.Attributes
+                )
+            );
+        }
+
+        public override IGH_GeometricGoo Morph(
+            SpaceMorph xmorph)
+        {
+            if (Value == null ||
+                Value.Geometry == null)
+            {
+                return new ME_Object_Goo();
+            }
+
+            if (Value.Geometry is GH_GeometryGroup ghGroup)
+            {
+                IGH_GeometricGoo morphed =
+                    ghGroup.Morph(xmorph);
+
+                if (morphed == null)
+                    return null;
+
+                return new ME_Object_Goo(
+                    new ME_Object(
+                        morphed,
+                        Value.Attributes
+                    )
+                );
+            }
+
+            object geometry =
+                Value.Geometry;
+
+            if (geometry is GeometryBase rhinoGeometry)
+            {
+                GeometryBase duplicate =
+                    rhinoGeometry.Duplicate();
+
+                if (xmorph.Morph(duplicate))
+                {
+                    return new ME_Object_Goo(
+                        new ME_Object(
+                            duplicate,
+                            Value.Attributes
+                        )
+                    );
+                }
+            }
+
+            return new ME_Object_Goo(
+                new ME_Object(
+                    geometry,
+                    Value.Attributes
+                )
+            );
         }
 
         public override bool CastFrom(object source)
@@ -94,35 +285,113 @@ namespace Meanders_tools
                 return true;
             }
 
-            if (Value.Geometry != null &&
-                typeof(Q).IsAssignableFrom(
-                    Value.Geometry.GetType()))
+            if (Value.Geometry != null)
             {
-                object geometry = Value.Geometry;
-                target = (Q)geometry;
-                return true;
+                // unwrap geometry group
+                if (Value.Geometry is GH_GeometryGroup group)
+                {
+                    if (typeof(Q).IsAssignableFrom(typeof(GH_GeometryGroup)))
+                    {
+                        object obj = group;
+                        target = (Q)obj;
+                        return true;
+                    }
+                }
+
+                if (typeof(Q).IsAssignableFrom(
+                    Value.Geometry.GetType()))
+                {
+                    object geometry = Value.Geometry;
+                    target = (Q)geometry;
+                    return true;
+                }
             }
 
             return base.CastTo(ref target);
         }
 
-        // ------------------------------------------------------------
-        // Preview
-        // ------------------------------------------------------------
-
-        public BoundingBox ClippingBox
+        public override bool IsGeometryLoaded
         {
             get
             {
                 if (Value == null ||
                     Value.Geometry == null)
                 {
-                    return BoundingBox.Empty;
+                    return false;
                 }
 
-                return GetBoundingBox(
-                    Value.Geometry);
+                if (Value.Geometry is IGH_GeometricGoo geometricGoo)
+                    return geometricGoo.IsGeometryLoaded;
+
+                return true;
             }
+        }
+
+        public override bool IsReferencedGeometry
+        {
+            get
+            {
+                if (Value == null ||
+                    Value.Geometry == null)
+                {
+                    return false;
+                }
+
+                if (Value.Geometry is IGH_GeometricGoo geometricGoo)
+                    return geometricGoo.IsReferencedGeometry;
+
+                return false;
+            }
+        }
+
+        public override Guid ReferenceID
+        {
+            get
+            {
+                if (Value == null ||
+                    Value.Geometry == null)
+                {
+                    return Guid.Empty;
+                }
+
+                if (Value.Geometry is IGH_GeometricGoo geometricGoo)
+                    return geometricGoo.ReferenceID;
+
+                return Guid.Empty;
+            }
+
+            set
+            {
+                if (Value == null ||
+                    Value.Geometry == null)
+                    return;
+
+                if (Value.Geometry is IGH_GeometricGoo geometricGoo)
+                    geometricGoo.ReferenceID = value;
+            }
+        }
+
+        public override void ClearCaches()
+        {
+            if (Value == null ||
+                Value.Geometry == null)
+                return;
+
+            if (Value.Geometry is IGH_GeometricGoo geometricGoo)
+                geometricGoo.ClearCaches();
+        }
+
+        public override bool LoadGeometry(
+    RhinoDoc doc)
+        {
+            if (Value == null ||
+                Value.Geometry == null)
+                return false;
+
+            if (Value.Geometry is IGH_GeometricGoo geometricGoo)
+                return geometricGoo.LoadGeometry(doc);
+
+            return true;
         }
 
         public void DrawViewportMeshes(
@@ -131,6 +400,12 @@ namespace Meanders_tools
             if (Value == null ||
                 Value.Geometry == null)
                 return;
+
+            if (Value.Geometry is GH_GeometryGroup ghGroup)
+            {
+                ghGroup.DrawViewportMeshes(args);
+                return;
+            }
 
             DrawMeshes(
                 args.Pipeline,
@@ -144,21 +419,23 @@ namespace Meanders_tools
                 Value.Geometry == null)
                 return;
 
+            if (Value.Geometry is GH_GeometryGroup ghGroup)
+            {
+                ghGroup.DrawViewportWires(args);
+                return;
+            }
+
             DrawWires(
                 args.Pipeline,
                 Value.Geometry);
         }
 
-        // ------------------------------------------------------------
-        // Bake
-        // ------------------------------------------------------------
-
         public bool BakeGeometry(
             RhinoDoc doc,
             ObjectAttributes att,
-            out System.Guid objGuid)
+            out Guid objGuid)
         {
-            objGuid = System.Guid.Empty;
+            objGuid = Guid.Empty;
 
             if (doc == null ||
                 Value == null ||
@@ -185,12 +462,16 @@ namespace Meanders_tools
                     new ObjectAttributes();
             }
 
+            if (Value.Geometry is GH_GeometryGroup ghGroup)
+            {
+                return ghGroup.BakeGeometry(
+                    doc,
+                    bakeAttributes,
+                    ref objGuid);
+            }
+
             object geometry =
                 Value.Geometry;
-
-            // --------------------------------------------------------
-            // SubD
-            // --------------------------------------------------------
 
             if (geometry is SubD subD)
             {
@@ -199,12 +480,8 @@ namespace Meanders_tools
                         subD,
                         bakeAttributes);
 
-                return objGuid != System.Guid.Empty;
+                return objGuid != Guid.Empty;
             }
-
-            // --------------------------------------------------------
-            // Standard Rhino Geometry
-            // --------------------------------------------------------
 
             if (geometry is GeometryBase rhinoGeometry)
             {
@@ -213,12 +490,8 @@ namespace Meanders_tools
                         rhinoGeometry,
                         bakeAttributes);
 
-                return objGuid != System.Guid.Empty;
+                return objGuid != Guid.Empty;
             }
-
-            // --------------------------------------------------------
-            // Point3d
-            // --------------------------------------------------------
 
             if (geometry is Point3d point)
             {
@@ -227,12 +500,8 @@ namespace Meanders_tools
                         point,
                         bakeAttributes);
 
-                return objGuid != System.Guid.Empty;
+                return objGuid != Guid.Empty;
             }
-
-            // --------------------------------------------------------
-            // Rectangle3d
-            // --------------------------------------------------------
 
             if (geometry is Rectangle3d rectangle)
             {
@@ -241,15 +510,11 @@ namespace Meanders_tools
                         rectangle.ToNurbsCurve(),
                         bakeAttributes);
 
-                return objGuid != System.Guid.Empty;
+                return objGuid != Guid.Empty;
             }
 
             return false;
         }
-
-        // ------------------------------------------------------------
-        // Bounding Box
-        // ------------------------------------------------------------
 
         private BoundingBox GetBoundingBox(
             object geometry)
@@ -287,10 +552,6 @@ namespace Meanders_tools
             return BoundingBox.Empty;
         }
 
-        // ------------------------------------------------------------
-        // Preview Meshes
-        // ------------------------------------------------------------
-
         private void DrawMeshes(
             DisplayPipeline display,
             object geometry)
@@ -315,10 +576,6 @@ namespace Meanders_tools
                 return;
             }
 
-            // --------------------------------------------------------
-            // SubD
-            // --------------------------------------------------------
-
             if (geometry is SubD subD)
             {
                 Mesh subDMesh =
@@ -336,10 +593,6 @@ namespace Meanders_tools
 
                 return;
             }
-
-            // --------------------------------------------------------
-            // Rectangle
-            // --------------------------------------------------------
 
             if (geometry is Rectangle3d rectangle)
             {
@@ -363,10 +616,6 @@ namespace Meanders_tools
             }
         }
 
-        // ------------------------------------------------------------
-        // Preview Wires
-        // ------------------------------------------------------------
-
         private void DrawWires(
             DisplayPipeline display,
             object geometry)
@@ -389,10 +638,6 @@ namespace Meanders_tools
                 return;
             }
 
-            // --------------------------------------------------------
-            // SubD
-            // --------------------------------------------------------
-
             if (geometry is SubD subD)
             {
                 Mesh subDMesh =
@@ -410,10 +655,6 @@ namespace Meanders_tools
                 return;
             }
 
-            // --------------------------------------------------------
-            // Curve
-            // --------------------------------------------------------
-
             if (geometry is Curve curve)
             {
                 display.DrawCurve(
@@ -423,10 +664,6 @@ namespace Meanders_tools
 
                 return;
             }
-
-            // --------------------------------------------------------
-            // Rhino Point
-            // --------------------------------------------------------
 
             if (geometry is Rhino.Geometry.Point point)
             {
@@ -439,10 +676,6 @@ namespace Meanders_tools
                 return;
             }
 
-            // --------------------------------------------------------
-            // Point3d
-            // --------------------------------------------------------
-
             if (geometry is Point3d point3d)
             {
                 display.DrawPoint(
@@ -453,10 +686,6 @@ namespace Meanders_tools
 
                 return;
             }
-
-            // --------------------------------------------------------
-            // Rectangle
-            // --------------------------------------------------------
 
             if (geometry is Rectangle3d rectangle)
             {
