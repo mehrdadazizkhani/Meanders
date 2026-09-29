@@ -22,6 +22,10 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <Compile Remove="ME_Object_Component.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <PackageReference Include="Grasshopper" Version="7.0.20314.3001" Condition="$(TargetFramework) == 'net48'" ExcludeAssets="runtime" />
     <PackageReference Include="Grasshopper" Version="8.0.23304.9001" Condition="!$(TargetFramework.StartsWith('net4'))" ExcludeAssets="runtime" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.12" />
