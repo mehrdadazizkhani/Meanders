@@ -12,8 +12,8 @@ namespace Meanders_tools
                 "ME Attribute",
                 "ME Attr",
                 "Meanders Attributes",
-                "Meanders Tools",
-                "Attributes")
+                "Meanders",
+                "Params")
         {
         }
 

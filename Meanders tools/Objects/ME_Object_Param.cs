@@ -20,8 +20,8 @@ namespace Meanders_tools
                 "ME Object",
                 "ME Obj",
                 "Meanders Object",
-                "Meanders Tools",
-                "Objects",
+                "Meanders",
+                "Params",
                 GH_ParamAccess.tree)
         {
             m_hidden = false;

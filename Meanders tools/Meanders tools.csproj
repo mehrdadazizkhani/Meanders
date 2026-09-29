@@ -32,7 +32,6 @@
   
   <ItemGroup>
     <EmbeddedResource Include="Resources\Meanders.png" />
-    <EmbeddedResource Include="Resources\Meanders1.png" />
   </ItemGroup>
   
   <ItemGroup>
