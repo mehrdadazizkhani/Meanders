@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Meanders_tools
 {
-    public class ME_Object : GH_Component
+    public class ME_Object_Component : GH_Component
     {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
@@ -15,7 +15,7 @@ namespace Meanders_tools
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public ME_Object()
+        public ME_Object_Component()
           : base("ME_Object", "Object",
             "Construct an Archimedean, or arithmetic, spiral given its radii and number of turns.",
             "Curve", "Primitive")
