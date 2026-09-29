@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Drawing;
 
-namespace Meanders_tools
+namespace Meanders_tools.Components
 {
     public class ME_Attach_Attribute_Component : GH_Component
     {

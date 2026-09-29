@@ -32,14 +32,14 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Fabrication\" />
-    <Folder Include="Materials\" />
-    <Folder Include="Communication\" />
-    <Folder Include="Analysis\" />
-    <Folder Include="Geometry\" />
-    <Folder Include="Math\" />
-    <Folder Include="Layout\" />
+    <Folder Include="Core\" />
+    <Folder Include="Rhino\" />
+    <Folder Include="Resources\" />
+    <Folder Include="Documentation\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   
   <Target Name="CopyPdbForMonoDebugging" AfterTargets="AfterBuild">

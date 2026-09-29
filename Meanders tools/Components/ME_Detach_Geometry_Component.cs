@@ -5,7 +5,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 
-namespace Meanders_tools
+namespace Meanders_tools.Components
 {
     public class ME_Detach_Geometry_Component : GH_Component
     {

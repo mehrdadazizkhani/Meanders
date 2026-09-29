@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace Meanders_tools
+namespace Meanders_tools.Components
 {
     public class ME_Attribute_Component : GH_Component
     {
