@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Drawing;
 
+
 namespace Meanders_tools
 {
     public class ME_Attach_Attribute_Component : GH_Component
@@ -114,16 +115,39 @@ namespace Meanders_tools
             if (goo == null)
                 return null;
 
+            // Already an ME Object
             if (goo is ME_Object_Goo meObjectGoo)
             {
-                return meObjectGoo.Value != null
-                    ? meObjectGoo.Value.Geometry
-                    : null;
+                if (meObjectGoo.Value == null)
+                    return null;
+
+                return meObjectGoo.Value.Geometry;
             }
 
+            // Common Grasshopper geometry types
+            if (goo is GH_Point ghPoint)
+                return ghPoint.Value;
+
+            if (goo is GH_Curve ghCurve)
+                return ghCurve.Value;
+
+            if (goo is GH_Brep ghBrep)
+                return ghBrep.Value;
+
+            if (goo is GH_Mesh ghMesh)
+                return ghMesh.Value;
+
+            if (goo is GH_Rectangle ghRectangle)
+                return ghRectangle.Value;
+
+            if (goo is GH_Line ghLine)
+                return ghLine.Value;
+
+            // Generic wrapper
             if (goo is GH_ObjectWrapper wrapper)
                 return wrapper.Value;
 
+            // Fallback
             return goo;
         }
 

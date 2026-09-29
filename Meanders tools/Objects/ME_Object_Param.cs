@@ -1,6 +1,7 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using Rhino;
+using Rhino.DocObjects;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,6 +13,8 @@ namespace Meanders_tools
         IGH_PreviewObject,
         IGH_BakeAwareObject
     {
+        private bool m_hidden;
+
         public ME_Object_Param()
             : base(
                 "ME Object",
@@ -21,6 +24,7 @@ namespace Meanders_tools
                 "Objects",
                 GH_ParamAccess.tree)
         {
+            m_hidden = false;
         }
 
         public override Guid ComponentGuid
@@ -37,90 +41,67 @@ namespace Meanders_tools
             get { return null; }
         }
 
-        public bool IsPreviewCapable
+        // ------------------------------------------------------------
+        // Preview
+        // ------------------------------------------------------------
+
+        bool IGH_PreviewObject.Hidden
+        {
+            get { return m_hidden; }
+            set { m_hidden = value; }
+        }
+
+        bool IGH_PreviewObject.IsPreviewCapable
         {
             get { return true; }
         }
 
-        public bool Hidden
-        {
-            get { return false; }
-            set { }
-        }
-
-        public void DrawViewportMeshes(
-            IGH_PreviewArgs args)
-        {
-            if (VolatileData == null)
-                return;
-
-            foreach (ME_Object_Goo meObject
-                in VolatileData.AllData(true))
-            {
-                meObject.DrawViewportMeshes(
-                    new GH_PreviewMeshArgs(
-                        args.Viewport,
-                        args.Display,
-                        new Rhino.Display.DisplayMaterial(
-                            Color.LightGray),
-                        Rhino.Geometry.MeshingParameters.Default));
-            }
-        }
-
-        public void DrawViewportWires(
-            IGH_PreviewArgs args)
-        {
-            if (VolatileData == null)
-                return;
-
-            foreach (ME_Object_Goo meObject
-                in VolatileData.AllData(true))
-            {
-                meObject.DrawViewportWires(
-                    new GH_PreviewWireArgs(
-                        args.Viewport,
-                        args.Display,
-                        Color.Black,
-                        1));
-            }
-        }
-
-        public Rhino.Geometry.BoundingBox ClippingBox
+        Rhino.Geometry.BoundingBox
+            IGH_PreviewObject.ClippingBox
         {
             get
             {
-                Rhino.Geometry.BoundingBox box =
-                    Rhino.Geometry.BoundingBox.Empty;
-
-                if (VolatileData == null)
-                    return box;
-
-                foreach (ME_Object_Goo meObject
-                    in VolatileData.AllData(true))
-                {
-                    box.Union(meObject.ClippingBox);
-                }
-
-                return box;
+                return base.Preview_ComputeClippingBox();
             }
         }
 
-        public bool IsBakeCapable
+        void IGH_PreviewObject.DrawViewportMeshes(
+            IGH_PreviewArgs args)
         {
-            get { return true; }
+            base.Preview_DrawMeshes(args);
         }
 
-        public void BakeGeometry(
+        void IGH_PreviewObject.DrawViewportWires(
+            IGH_PreviewArgs args)
+        {
+            base.Preview_DrawWires(args);
+        }
+
+        // ------------------------------------------------------------
+        // Bake
+        // ------------------------------------------------------------
+
+        bool IGH_BakeAwareObject.IsBakeCapable
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        void IGH_BakeAwareObject.BakeGeometry(
             RhinoDoc doc,
             List<Guid> obj_ids)
         {
-            if (doc == null ||
-                VolatileData == null)
+            if (doc == null)
                 return;
 
             foreach (ME_Object_Goo meObject
                 in VolatileData.AllData(true))
             {
+                if (meObject == null)
+                    continue;
+
                 Guid objGuid;
 
                 if (meObject.BakeGeometry(
@@ -133,18 +114,20 @@ namespace Meanders_tools
             }
         }
 
-        public void BakeGeometry(
+        void IGH_BakeAwareObject.BakeGeometry(
             RhinoDoc doc,
-            Rhino.DocObjects.ObjectAttributes att,
+            ObjectAttributes att,
             List<Guid> obj_ids)
         {
-            if (doc == null ||
-                VolatileData == null)
+            if (doc == null)
                 return;
 
             foreach (ME_Object_Goo meObject
                 in VolatileData.AllData(true))
             {
+                if (meObject == null)
+                    continue;
+
                 Guid objGuid;
 
                 if (meObject.BakeGeometry(

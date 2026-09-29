@@ -198,6 +198,15 @@ namespace Meanders_tools
 
                 return objGuid != Guid.Empty;
             }
+            if (geometry is Rectangle3d rectangle)
+            {
+                objGuid =
+                    doc.Objects.AddCurve(
+                        rectangle.ToNurbsCurve(),
+                        bakeAttributes);
+
+                return objGuid != Guid.Empty;
+            }
 
             return false;
         }
@@ -311,6 +320,15 @@ namespace Meanders_tools
                     PointStyle.Simple,
                     3,
                     Color.Black);
+            }
+            if (geometry is Rectangle3d rectangle)
+            {
+                display.DrawCurve(
+                    rectangle.ToNurbsCurve(),
+                    Color.Black,
+                    1);
+
+                return;
             }
         }
     }
