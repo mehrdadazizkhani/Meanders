@@ -68,13 +68,25 @@ namespace Meanders_tools
         }
 
         protected override void RegisterOutputParams(
-            GH_OutputParamManager pManager)
+     GH_OutputParamManager pManager)
         {
             pManager.AddGenericParameter(
                 "Attributes",
                 "A",
                 "Meanders attributes.",
                 GH_ParamAccess.item);
+
+            pManager.AddTextParameter(
+                "Keys",
+                "K",
+                "User text keys.",
+                GH_ParamAccess.list);
+
+            pManager.AddTextParameter(
+                "Values",
+                "V",
+                "User text values.",
+                GH_ParamAccess.list);
 
             pManager.AddTextParameter(
                 "Name",
@@ -93,18 +105,6 @@ namespace Meanders_tools
                 "Oc",
                 "Object color.",
                 GH_ParamAccess.item);
-
-            pManager.AddTextParameter(
-                "Keys",
-                "K",
-                "User text keys.",
-                GH_ParamAccess.list);
-
-            pManager.AddTextParameter(
-                "Values",
-                "V",
-                "User text values.",
-                GH_ParamAccess.list);
         }
 
         protected override void SolveInstance(
@@ -208,9 +208,6 @@ namespace Meanders_tools
                 new ME_Attribute_Goo(attribute);
 
             DA.SetData(0, output);
-            DA.SetData(1, attribute.Name);
-            DA.SetData(2, attribute.Layer);
-            DA.SetData(3, attribute.ObjectColor);
 
             Dictionary<string, string> userText =
                 attribute.GetUserText();
@@ -221,8 +218,12 @@ namespace Meanders_tools
             List<string> outputValues =
                 new List<string>(userText.Values);
 
-            DA.SetDataList(4, outputKeys);
-            DA.SetDataList(5, outputValues);
+            DA.SetDataList(1, outputKeys);
+            DA.SetDataList(2, outputValues);
+
+            DA.SetData(3, attribute.Name);
+            DA.SetData(4, attribute.Layer);
+            DA.SetData(5, attribute.ObjectColor);
         }
 
         public override GH_Exposure Exposure
