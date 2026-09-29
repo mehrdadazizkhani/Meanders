@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 
-namespace Meanders_tools
+namespace Meanders.tools.Plugin
 {
     public class Meanders_toolsPriority : GH_AssemblyPriority
     {

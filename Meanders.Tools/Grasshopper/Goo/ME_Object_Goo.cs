@@ -1,5 +1,6 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
+using Meanders.tools.Core;
 using Rhino;
 using Rhino.Display;
 using Rhino.DocObjects;
@@ -7,7 +8,7 @@ using Rhino.Geometry;
 using System;
 using System.Drawing;
 
-namespace Meanders_tools
+namespace Meanders.tools.Grasshopper.Goo
 {
     public class ME_Object_Goo :
         GH_GeometricGoo<ME_Object>,

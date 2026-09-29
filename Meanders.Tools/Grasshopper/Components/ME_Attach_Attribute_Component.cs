@@ -1,11 +1,13 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
+using Meanders.tools.Core;
+using Meanders.tools.Grasshopper.Goo;
 using System;
 using System.Collections;
 using System.Drawing;
 
-namespace Meanders_tools.Components
+namespace Meanders.tools.Grasshopper.Components
 {
     public class ME_Attach_Attribute_Component : GH_Component
     {

@@ -1,12 +1,13 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
+using Meanders.tools.Grasshopper.Goo;
 using Rhino;
 using Rhino.DocObjects;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace Meanders_tools
+namespace Meanders.tools.Grasshopper.Parameters
 {
     public class ME_Object_Param :
         GH_Param<ME_Object_Goo>,
