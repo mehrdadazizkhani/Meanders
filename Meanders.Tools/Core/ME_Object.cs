@@ -2,7 +2,7 @@
 using Rhino.DocObjects;
 using System;
 
-namespace Meanders.tools.Core
+namespace Meanders.Tools.Core
 {
     public class ME_Object
     {

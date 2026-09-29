@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 
-namespace Meanders.tools.Plugin
+namespace Meanders.Tools.Plugin
 {
     public class Meanders_toolsInfo : GH_AssemblyInfo
     {
@@ -17,7 +17,7 @@ namespace Meanders.tools.Plugin
                 Stream stream =
                     Assembly.GetExecutingAssembly()
                     .GetManifestResourceStream(
-                        "Meanders_tools.Resources.Meanders.png");
+                        "Meanders_Tools.Resources.Meanders.png");
 
                 if (stream == null)
                     return null;

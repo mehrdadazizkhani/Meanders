@@ -1,9 +1,9 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
-using Meanders.tools.Core;
+using Meanders.Tools.Core;
 using System;
 
-namespace Meanders.tools.Grasshopper.Goo
+namespace Meanders.Tools.Grasshopper.Goo
 {
     public class ME_Attribute_Goo : GH_Goo<ME_Attribute>
     {

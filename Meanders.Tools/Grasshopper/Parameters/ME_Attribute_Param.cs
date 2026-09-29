@@ -1,10 +1,10 @@
 ﻿using Grasshopper.Kernel;
-using Meanders.tools.Grasshopper.Goo;
+using Meanders.Tools.Grasshopper.Goo;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace Meanders.tools.Grasshopper.Parameters
+namespace Meanders.Tools.Grasshopper.Parameters
 {
     public class ME_Attribute_Param : GH_PersistentParam<ME_Attribute_Goo>
     {

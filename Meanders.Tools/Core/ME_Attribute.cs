@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
 
-namespace Meanders.tools.Core
+namespace Meanders.Tools.Core
 {
     public class ME_Attribute
     {

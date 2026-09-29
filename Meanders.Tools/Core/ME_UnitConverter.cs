@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Meanders.tools.Core
+namespace Meanders.Tools.Core
 {
     public static class ME_UnitConverter
     {

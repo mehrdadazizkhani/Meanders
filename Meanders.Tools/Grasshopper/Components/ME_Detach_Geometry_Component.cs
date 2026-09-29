@@ -1,13 +1,14 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
-using Meanders.tools.Core;
-using Meanders.tools.Grasshopper.Goo;
+using Meanders.Tools.Core;
+using Meanders.Tools.Grasshopper.Goo;
 using System;
 using System.Drawing;
-using System.Linq;
+using Meanders.Tools.Grasshopper.Parameters;
 
-namespace Meanders.tools.Grasshopper.Components
+
+namespace Meanders.Tools.Grasshopper.Components
 {
     public class ME_Detach_Geometry_Component : GH_Component
     {

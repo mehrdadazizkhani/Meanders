@@ -1,9 +1,9 @@
 ﻿using Grasshopper.Kernel;
-using Meanders.tools.Core;
+using Meanders.Tools.Core;
 using System;
 using System.Drawing;
 
-namespace Meanders.tools.Grasshopper.Components
+namespace Meanders.Tools.Grasshopper.Components
 {
     public class ME_Unit_Converter_Component : GH_Component
     {
