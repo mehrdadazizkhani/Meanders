@@ -277,20 +277,14 @@ namespace Meanders_tools
             if (Value == null)
                 return base.CastTo(ref target);
 
-            if (typeof(Q).IsAssignableFrom(
-                typeof(ME_Object)))
-            {
-                object obj = Value;
-                target = (Q)obj;
-                return true;
-            }
 
+            // 1. unwrap internal geometry first
             if (Value.Geometry != null)
             {
-                // unwrap geometry group
                 if (Value.Geometry is GH_GeometryGroup group)
                 {
-                    if (typeof(Q).IsAssignableFrom(typeof(GH_GeometryGroup)))
+                    if (typeof(Q).IsAssignableFrom(
+                        typeof(GH_GeometryGroup)))
                     {
                         object obj = group;
                         target = (Q)obj;
@@ -306,6 +300,17 @@ namespace Meanders_tools
                     return true;
                 }
             }
+
+
+            // 2. fallback to ME Object
+            if (typeof(Q).IsAssignableFrom(
+                typeof(ME_Object)))
+            {
+                object obj = Value;
+                target = (Q)obj;
+                return true;
+            }
+
 
             return base.CastTo(ref target);
         }
