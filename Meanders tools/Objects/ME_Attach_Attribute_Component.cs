@@ -139,6 +139,9 @@ namespace Meanders_tools
             if (goo is GH_SubD ghSubD)
                 return ghSubD.Value;
 
+            if (goo is GH_GeometryGroup ghGroup)
+                return ghGroup;
+
             if (goo is GH_Mesh ghMesh)
                 return ghMesh.Value;
 
