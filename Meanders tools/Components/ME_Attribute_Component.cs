@@ -15,7 +15,7 @@ namespace Meanders_tools.Components
                 "ME Attribute",
                 "ME Attr",
                 "Create or modify Meanders attributes.",
-                "Meanders Tools",
+                "Meanders",
                 "Attributes")
         {
         }

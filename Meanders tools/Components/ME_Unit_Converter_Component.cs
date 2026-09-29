@@ -7,22 +7,57 @@ namespace Meanders_tools
     public class ME_Unit_Converter_Component : GH_Component
     {
         private ME_UnitConverter.LengthUnit _fromUnit =
-            ME_UnitConverter.LengthUnit.Millimeter;
+    ME_UnitConverter.LengthUnit.Millimeter;
 
         private ME_UnitConverter.LengthUnit _toUnit =
             ME_UnitConverter.LengthUnit.Centimeter;
 
+        private bool _invert = false;
+
 
         public ME_Unit_Converter_Component()
-            : base(
-                "ME Unit Converter",
-                "ME Units",
-                "Convert between different measurement units.",
-                "Meanders Tools",
-                "Units")
+     : base(
+         "ME Unit Converter",
+         "ME Units",
+         "Convert between different measurement units.",
+         "Meanders",
+         "Units")
         {
+            UpdateMessage();
         }
 
+        private string ShortUnit(
+    ME_UnitConverter.LengthUnit unit)
+        {
+            switch (unit)
+            {
+                case ME_UnitConverter.LengthUnit.Millimeter:
+                    return "mm";
+
+                case ME_UnitConverter.LengthUnit.Centimeter:
+                    return "cm";
+
+                case ME_UnitConverter.LengthUnit.Meter:
+                    return "m";
+
+                case ME_UnitConverter.LengthUnit.Inch:
+                    return "in";
+
+                case ME_UnitConverter.LengthUnit.Foot:
+                    return "ft";
+
+                default:
+                    return unit.ToString();
+            }
+        }
+
+        private void UpdateMessage()
+        {
+            string arrow = _invert ? "←" : "→";
+
+            Message =
+                $"Length\n{ShortUnit(_fromUnit)} {arrow} {ShortUnit(_toUnit)}";
+        }
 
         protected override void RegisterInputParams(
             GH_InputParamManager pManager)
@@ -33,6 +68,7 @@ namespace Meanders_tools
                 "Value to convert.",
                 GH_ParamAccess.item);
         }
+
 
 
         protected override void RegisterOutputParams(
@@ -47,7 +83,7 @@ namespace Meanders_tools
 
 
         protected override void SolveInstance(
-            IGH_DataAccess DA)
+    IGH_DataAccess DA)
         {
             double value = 0;
 
@@ -55,14 +91,28 @@ namespace Meanders_tools
                 return;
 
 
+            var from = _fromUnit;
+            var to = _toUnit;
+
+
+            if (_invert)
+            {
+                from = _toUnit;
+                to = _fromUnit;
+            }
+
+
             double result =
                 ME_UnitConverter.ConvertLength(
                     value,
-                    _fromUnit,
-                    _toUnit);
+                    from,
+                    to);
 
 
             DA.SetData(0, result);
+
+
+            UpdateMessage();
         }
 
 
@@ -86,6 +136,21 @@ namespace Meanders_tools
                     false);
 
             menu.Items.Add(toMenu);
+
+            var invert =
+    new System.Windows.Forms.ToolStripMenuItem(
+        "Invert");
+
+            invert.Checked = _invert;
+
+            invert.Click += (sender, e) =>
+            {
+                _invert = !_invert;
+                UpdateMessage();
+                ExpireSolution(true);
+            };
+
+            menu.Items.Add(invert);
         }
 
 
@@ -114,6 +179,7 @@ namespace Meanders_tools
                     else
                         _toUnit = unit;
 
+                    UpdateMessage();
 
                     ExpireSolution(true);
                 };

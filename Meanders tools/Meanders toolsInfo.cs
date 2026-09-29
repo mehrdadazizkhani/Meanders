@@ -1,29 +1,44 @@
-﻿using Grasshopper;
-using Grasshopper.Kernel;
+﻿using Grasshopper.Kernel;
 using System;
 using System.Drawing;
+using System.IO;
+using System.Reflection;
 
 namespace Meanders_tools
 {
     public class Meanders_toolsInfo : GH_AssemblyInfo
     {
-        public override string Name => "Meanders tools";
+        public override string Name => "Meanders";
 
-        //Return a 24x24 pixel bitmap to represent this GHA library.
-        public override Bitmap Icon => null;
+        public override Bitmap Icon
+        {
+            get
+            {
+                Stream stream =
+                    Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream(
+                        "Meanders_tools.Resources.Meanders.png");
 
-        //Return a short string describing the purpose of this GHA library.
-        public override string Description => "";
+                if (stream == null)
+                    return null;
 
-        public override Guid Id => new Guid("715d84fe-2a1e-42bc-851e-ec6ce26c0835");
+                return new Bitmap(stream);
+            }
+        }
 
-        //Return a string identifying you or your company.
-        public override string AuthorName => "";
+        public override string Description =>
+            "Meanders design and fabrication tools for Grasshopper.";
 
-        //Return a string representing your preferred contact details.
-        public override string AuthorContact => "";
+        public override Guid Id =>
+            new Guid("715d84fe-2a1e-42bc-851e-ec6ce26c0835");
 
-        //Return a string representing the version.  This returns the same version as the assembly.
-        public override string AssemblyVersion => GetType().Assembly.GetName().Version.ToString();
+        public override string AuthorName =>
+            "Mehrdad Azizkhani";
+
+        public override string AuthorContact =>
+            "";
+
+        public override string AssemblyVersion =>
+            GetType().Assembly.GetName().Version.ToString();
     }
 }

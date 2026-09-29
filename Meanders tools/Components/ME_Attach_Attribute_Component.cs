@@ -14,7 +14,7 @@ namespace Meanders_tools.Components
                 "ME Attach Attribute",
                 "ME Attach",
                 "Attach Meanders attributes to geometry or Grasshopper data.",
-                "Meanders Tools",
+                "Meanders",
                 "Objects")
         {
         }

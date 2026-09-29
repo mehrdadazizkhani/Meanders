@@ -14,7 +14,7 @@ namespace Meanders_tools.Components
                 "ME Detach Geometry",
                 "ME Detach",
                 "Detach geometry and attributes from Meanders objects.",
-                "Meanders Tools",
+                "Meanders",
                 "Objects")
         {
         }
