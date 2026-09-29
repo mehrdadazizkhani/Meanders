@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Drawing;
 
-
 namespace Meanders_tools
 {
     public class ME_Attach_Attribute_Component : GH_Component
@@ -39,7 +38,7 @@ namespace Meanders_tools
         }
 
         protected override void RegisterOutputParams(
-    GH_OutputParamManager pManager)
+            GH_OutputParamManager pManager)
         {
             pManager.AddParameter(
                 new ME_Object_Param(),
