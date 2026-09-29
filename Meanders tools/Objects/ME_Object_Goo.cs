@@ -4,8 +4,8 @@ using Rhino;
 using Rhino.Display;
 using Rhino.DocObjects;
 using Rhino.Geometry;
-using System;
 using System.Drawing;
+using System;
 
 namespace Meanders_tools
 {
@@ -23,6 +23,10 @@ namespace Meanders_tools
         {
             Value = obj;
         }
+
+        // ------------------------------------------------------------
+        // Basic Goo
+        // ------------------------------------------------------------
 
         public override bool IsValid
         {
@@ -79,15 +83,18 @@ namespace Meanders_tools
 
         public override bool CastTo<Q>(ref Q target)
         {
-            if (typeof(Q).IsAssignableFrom(typeof(ME_Object)))
+            if (Value == null)
+                return base.CastTo(ref target);
+
+            if (typeof(Q).IsAssignableFrom(
+                typeof(ME_Object)))
             {
                 object obj = Value;
                 target = (Q)obj;
                 return true;
             }
 
-            if (Value != null &&
-                Value.Geometry != null &&
+            if (Value.Geometry != null &&
                 typeof(Q).IsAssignableFrom(
                     Value.Geometry.GetType()))
             {
@@ -109,7 +116,9 @@ namespace Meanders_tools
             {
                 if (Value == null ||
                     Value.Geometry == null)
+                {
                     return BoundingBox.Empty;
+                }
 
                 return GetBoundingBox(
                     Value.Geometry);
@@ -147,9 +156,9 @@ namespace Meanders_tools
         public bool BakeGeometry(
             RhinoDoc doc,
             ObjectAttributes att,
-            out Guid objGuid)
+            out System.Guid objGuid)
         {
-            objGuid = Guid.Empty;
+            objGuid = System.Guid.Empty;
 
             if (doc == null ||
                 Value == null ||
@@ -179,6 +188,24 @@ namespace Meanders_tools
             object geometry =
                 Value.Geometry;
 
+            // --------------------------------------------------------
+            // SubD
+            // --------------------------------------------------------
+
+            if (geometry is SubD subD)
+            {
+                objGuid =
+                    doc.Objects.AddSubD(
+                        subD,
+                        bakeAttributes);
+
+                return objGuid != System.Guid.Empty;
+            }
+
+            // --------------------------------------------------------
+            // Standard Rhino Geometry
+            // --------------------------------------------------------
+
             if (geometry is GeometryBase rhinoGeometry)
             {
                 objGuid =
@@ -186,8 +213,12 @@ namespace Meanders_tools
                         rhinoGeometry,
                         bakeAttributes);
 
-                return objGuid != Guid.Empty;
+                return objGuid != System.Guid.Empty;
             }
+
+            // --------------------------------------------------------
+            // Point3d
+            // --------------------------------------------------------
 
             if (geometry is Point3d point)
             {
@@ -196,8 +227,13 @@ namespace Meanders_tools
                         point,
                         bakeAttributes);
 
-                return objGuid != Guid.Empty;
+                return objGuid != System.Guid.Empty;
             }
+
+            // --------------------------------------------------------
+            // Rectangle3d
+            // --------------------------------------------------------
+
             if (geometry is Rectangle3d rectangle)
             {
                 objGuid =
@@ -205,7 +241,7 @@ namespace Meanders_tools
                         rectangle.ToNurbsCurve(),
                         bakeAttributes);
 
-                return objGuid != Guid.Empty;
+                return objGuid != System.Guid.Empty;
             }
 
             return false;
@@ -219,10 +255,14 @@ namespace Meanders_tools
             object geometry)
         {
             if (geometry is GeometryBase rhinoGeometry)
+            {
                 return rhinoGeometry.GetBoundingBox(true);
+            }
 
             if (geometry is BoundingBox bbox)
+            {
                 return bbox;
+            }
 
             if (geometry is Rhino.Geometry.Point point)
             {
@@ -238,11 +278,17 @@ namespace Meanders_tools
                     point3d);
             }
 
+            if (geometry is Rectangle3d rectangle)
+            {
+                return rectangle.ToNurbsCurve()
+                    .GetBoundingBox(true);
+            }
+
             return BoundingBox.Empty;
         }
 
         // ------------------------------------------------------------
-        // Preview Drawing
+        // Preview Meshes
         // ------------------------------------------------------------
 
         private void DrawMeshes(
@@ -268,7 +314,58 @@ namespace Meanders_tools
 
                 return;
             }
+
+            // --------------------------------------------------------
+            // SubD
+            // --------------------------------------------------------
+
+            if (geometry is SubD subD)
+            {
+                Mesh subDMesh =
+                    Mesh.CreateFromSubD(
+                        subD,
+                        2);
+
+                if (subDMesh != null)
+                {
+                    display.DrawMeshShaded(
+                        subDMesh,
+                        new DisplayMaterial(
+                            Color.LightGray));
+                }
+
+                return;
+            }
+
+            // --------------------------------------------------------
+            // Rectangle
+            // --------------------------------------------------------
+
+            if (geometry is Rectangle3d rectangle)
+            {
+                Brep[] rectangleBreps =
+                    Brep.CreatePlanarBreps(
+                        rectangle.ToNurbsCurve(),
+                        RhinoDoc.ActiveDoc != null
+                            ? RhinoDoc.ActiveDoc.ModelAbsoluteTolerance
+                            : 0.01);
+
+                if (rectangleBreps != null &&
+                    rectangleBreps.Length > 0)
+                {
+                    display.DrawBrepShaded(
+                        rectangleBreps[0],
+                        new DisplayMaterial(
+                            Color.LightGray));
+                }
+
+                return;
+            }
         }
+
+        // ------------------------------------------------------------
+        // Preview Wires
+        // ------------------------------------------------------------
 
         private void DrawWires(
             DisplayPipeline display,
@@ -292,6 +389,31 @@ namespace Meanders_tools
                 return;
             }
 
+            // --------------------------------------------------------
+            // SubD
+            // --------------------------------------------------------
+
+            if (geometry is SubD subD)
+            {
+                Mesh subDMesh =
+                    Mesh.CreateFromSubD(
+                        subD,
+                        2);
+
+                if (subDMesh != null)
+                {
+                    display.DrawMeshWires(
+                        subDMesh,
+                        Color.Black);
+                }
+
+                return;
+            }
+
+            // --------------------------------------------------------
+            // Curve
+            // --------------------------------------------------------
+
             if (geometry is Curve curve)
             {
                 display.DrawCurve(
@@ -301,6 +423,10 @@ namespace Meanders_tools
 
                 return;
             }
+
+            // --------------------------------------------------------
+            // Rhino Point
+            // --------------------------------------------------------
 
             if (geometry is Rhino.Geometry.Point point)
             {
@@ -313,6 +439,10 @@ namespace Meanders_tools
                 return;
             }
 
+            // --------------------------------------------------------
+            // Point3d
+            // --------------------------------------------------------
+
             if (geometry is Point3d point3d)
             {
                 display.DrawPoint(
@@ -320,7 +450,14 @@ namespace Meanders_tools
                     PointStyle.Simple,
                     3,
                     Color.Black);
+
+                return;
             }
+
+            // --------------------------------------------------------
+            // Rectangle
+            // --------------------------------------------------------
+
             if (geometry is Rectangle3d rectangle)
             {
                 display.DrawCurve(
