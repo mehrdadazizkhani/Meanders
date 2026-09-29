@@ -133,6 +133,12 @@ namespace Meanders_tools
             if (goo is GH_Brep ghBrep)
                 return ghBrep.Value;
 
+            if (goo is GH_Surface ghSurface)
+                return ghSurface.Value;
+
+            if (goo is GH_SubD ghSubD)
+                return ghSubD.Value;
+
             if (goo is GH_Mesh ghMesh)
                 return ghMesh.Value;
 
