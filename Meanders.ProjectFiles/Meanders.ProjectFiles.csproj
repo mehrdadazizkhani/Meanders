@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\metadata\**\*" />
+		<None Include="..\docs\**\*" />
+		<None Include="..\ROADMAP.md" />
+		<None Include="..\CHANGELOG.md" />
+		<None Include="..\README.md" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="docs\components\" />
+	  <Folder Include="docs\concepts\" />
+	  <Folder Include="docs\getting-started\" />
+	</ItemGroup>
+
+</Project>

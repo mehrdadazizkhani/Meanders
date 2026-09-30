@@ -1,3 +1,4 @@
 <Solution>
-  <Project Path="Meanders.Tools/Meanders.Tools.csproj" DisplayName="Meanders.Tools" />
+  <Project Path="Meanders.ProjectFiles/Meanders.ProjectFiles.csproj" Id="7be48a55-b79f-41e5-9338-06fee5754a67" />
+  <Project Path="Meanders.Tools/Meanders.Tools.csproj" />
 </Solution>
